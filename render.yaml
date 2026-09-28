@@ -1,0 +1,15 @@
+services:
+  - type: web
+    name: vlsi-assistant
+    runtime: python
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn app:app
+    envVars:
+      - key: GEMINI_API_KEY
+        sync: false
+      - key: FLASK_SECRET_KEY
+        generateValue: true
+      - key: COOKIE_SECURE
+        value: "true"
+      - key: GEMINI_MODEL
+        value: gemini-3.1-flash-lite

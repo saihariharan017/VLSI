@@ -1,0 +1,189 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="{{ ui.background }}">
+  <meta name="description" content="{{ ui.title }} — {{ ui.tagline }}">
+  <title>{{ ui.title }}</title>
+  <style>
+    :root {
+      --bg: {{ ui.background }};
+      --surface: {{ ui.surface }};
+      --surface2: {{ ui.surface_2 }};
+      --text: {{ ui.text }};
+      --muted: {{ ui.muted }};
+      --accent: {{ ui.accent }};
+      --cyan: {{ ui.accent_2 }};
+      --user: {{ ui.user_bubble }};
+      --bot: {{ ui.bot_bubble }};
+      --line: rgba(255,255,255,.08);
+      --shadow: 0 24px 80px rgba(0,0,0,.42);
+    }
+    * { box-sizing: border-box; }
+    html, body { height: 100%; margin: 0; }
+    body {
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      color: var(--text); background: var(--bg); overflow: hidden;
+    }
+    body::before {
+      content: ""; position: fixed; inset: 0; pointer-events: none; opacity: .34;
+      background-image: linear-gradient(rgba(139,92,246,.055) 1px, transparent 1px), linear-gradient(90deg, rgba(34,211,238,.04) 1px, transparent 1px);
+      background-size: 42px 42px; mask-image: linear-gradient(to bottom, #000, transparent 85%);
+    }
+    .shell { height: 100%; display: grid; grid-template-columns: 310px minmax(0,1fr); position: relative; }
+    aside {
+      border-right: 1px solid var(--line); padding: 28px 22px; background: rgba(9,13,24,.86); backdrop-filter: blur(18px);
+      display: flex; flex-direction: column; gap: 28px; position: relative; z-index: 2;
+    }
+    .chip { display:inline-flex; width:max-content; align-items:center; gap:8px; padding:7px 10px; border:1px solid rgba(34,211,238,.18); border-radius:999px; color:#9FE8F5; font-size:10px; font-weight:800; letter-spacing:.16em; }
+    .chip i { width:7px; height:7px; border-radius:50%; background:var(--cyan); box-shadow:0 0 14px var(--cyan); }
+    .brand { margin-top: 4px; }
+    .brand h1 { margin:0; font-size:31px; letter-spacing:-.055em; line-height:.95; font-weight:900; }
+    .brand h1 span { color:var(--accent); }
+    .brand p { color:var(--muted); line-height:1.55; font-size:13px; margin:12px 0 0; }
+    .node-card { border:1px solid var(--line); background:linear-gradient(145deg,rgba(17,24,39,.92),rgba(10,14,25,.75)); border-radius:20px; padding:18px; box-shadow:var(--shadow); }
+    .node-head { display:flex; justify-content:space-between; align-items:center; margin-bottom:14px; font-size:11px; color:var(--muted); text-transform:uppercase; letter-spacing:.12em; font-weight:800; }
+    .node-head b { color:#D9DDF0; }
+    .wafer { width:100%; aspect-ratio:1.65; border-radius:14px; position:relative; overflow:hidden; background: radial-gradient(circle at 50% 50%, rgba(139,92,246,.22), transparent 35%), linear-gradient(135deg,#0c1220,#151b2b); border:1px solid rgba(139,92,246,.16); }
+    .wafer::before { content:""; position:absolute; inset:13%; border:1px dashed rgba(34,211,238,.35); border-radius:50%; }
+    .wafer::after { content:""; position:absolute; width:36px; height:36px; left:50%; top:50%; transform:translate(-50%,-50%); border-radius:8px; border:1px solid rgba(255,255,255,.28); box-shadow:0 0 0 7px rgba(139,92,246,.07), 0 0 30px rgba(34,211,238,.18); }
+    .stats { display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-top:10px; }
+    .stat { border-top:1px solid var(--line); padding-top:9px; }
+    .stat strong { display:block; font-size:14px; }
+    .stat small { color:var(--muted); font-size:9px; text-transform:uppercase; letter-spacing:.1em; }
+    .side-note { margin-top:auto; color:#657087; font-size:11px; line-height:1.55; }
+    main { min-width:0; display:grid; grid-template-rows:auto minmax(0,1fr) auto; }
+    header { height:84px; border-bottom:1px solid var(--line); padding:0 34px; display:flex; align-items:center; justify-content:space-between; background:rgba(7,10,18,.62); backdrop-filter:blur(18px); }
+    .header-title { display:flex; align-items:center; gap:13px; }
+    .mark { width:38px; height:38px; display:grid; place-items:center; border:1px solid rgba(139,92,246,.35); background:linear-gradient(145deg,rgba(139,92,246,.2),rgba(34,211,238,.08)); border-radius:12px; }
+    .mark svg { width:19px; height:19px; }
+    .header-title strong { font-size:14px; letter-spacing:.02em; }
+    .status { display:flex; align-items:center; gap:8px; color:#8490A7; font-size:11px; }
+    .status b { width:6px; height:6px; border-radius:50%; background:#4ADE80; box-shadow:0 0 10px #4ADE80; }
+    .clear { border:1px solid var(--line); background:transparent; color:#AEB7C9; border-radius:10px; padding:9px 12px; cursor:pointer; font-weight:700; font-size:11px; }
+    .clear:hover { border-color:rgba(139,92,246,.45); color:#fff; }
+    #chat { overflow:auto; padding:38px clamp(18px,5vw,72px) 28px; scroll-behavior:smooth; }
+    .welcome { max-width:720px; margin:8vh auto 0; text-align:center; }
+    .orbit { width:76px; height:76px; border-radius:50%; margin:0 auto 22px; display:grid; place-items:center; border:1px solid rgba(34,211,238,.3); box-shadow:0 0 0 9px rgba(139,92,246,.04),0 0 48px rgba(34,211,238,.12); position:relative; }
+    .orbit::before,.orbit::after { content:""; position:absolute; inset:-9px; border:1px dashed rgba(139,92,246,.22); border-radius:50%; transform:rotate(35deg); }
+    .orbit::after { transform:rotate(-35deg); }
+    .orbit svg { width:28px; color:#A78BFA; }
+    .welcome h2 { font-size:clamp(28px,4vw,46px); line-height:1; letter-spacing:-.055em; margin:0; }
+    .welcome p { color:var(--muted); max-width:580px; margin:15px auto 0; line-height:1.65; }
+    .suggestions { display:flex; flex-wrap:wrap; gap:8px; justify-content:center; margin-top:24px; }
+    .suggestion { border:1px solid var(--line); background:rgba(17,24,39,.66); color:#BFC8D9; padding:10px 12px; border-radius:12px; cursor:pointer; font-size:11px; }
+    .suggestion:hover { border-color:rgba(34,211,238,.3); color:#fff; }
+    .messages { max-width:900px; margin:0 auto; display:flex; flex-direction:column; gap:17px; }
+    .row { display:flex; gap:11px; align-items:flex-end; }
+    .row.user { justify-content:flex-end; }
+    .avatar { width:28px; height:28px; flex:0 0 28px; border-radius:9px; display:grid; place-items:center; border:1px solid var(--line); background:#0E1422; color:#9CA7BB; font-size:10px; font-weight:900; }
+    .user .avatar { order:2; background:rgba(109,40,217,.24); color:#DDD6FE; border-color:rgba(167,139,250,.2); }
+    .bubble { max-width:min(78%,720px); padding:13px 15px; border-radius:17px 17px 17px 5px; background:var(--bot); border:1px solid var(--line); color:#D8DFEB; line-height:1.58; font-size:13px; white-space:pre-wrap; overflow-wrap:anywhere; }
+    .user .bubble { background:linear-gradient(145deg,#6D28D9,#5B21B6); border-color:rgba(196,181,253,.15); color:#fff; border-radius:17px 17px 5px 17px; }
+    .time { color:#5F6B80; font-size:9px; margin:0 2px; }
+    .typing { display:flex; align-items:center; gap:5px; padding:4px 2px; }
+    .typing i { width:5px; height:5px; border-radius:50%; background:#8B5CF6; animation:blink 1s infinite ease-in-out; }
+    .typing i:nth-child(2){animation-delay:.15s}.typing i:nth-child(3){animation-delay:.3s}
+    @keyframes blink { 0%,80%,100%{opacity:.25;transform:translateY(0)}40%{opacity:1;transform:translateY(-3px)} }
+    footer { padding:15px clamp(16px,4vw,56px) max(18px, env(safe-area-inset-bottom)); background:linear-gradient(to top,rgba(7,10,18,1),rgba(7,10,18,.88)); }
+    .composer { max-width:900px; margin:0 auto; display:flex; gap:9px; padding:8px; border:1px solid rgba(139,92,246,.2); background:rgba(13,18,32,.9); border-radius:18px; box-shadow:0 18px 60px rgba(0,0,0,.35); }
+    textarea { flex:1; min-width:0; resize:none; max-height:140px; border:0; outline:0; background:transparent; color:#fff; padding:10px 10px; font:inherit; font-size:13px; line-height:1.45; }
+    textarea::placeholder { color:#626D81; }
+    .send { width:43px; height:43px; flex:0 0 43px; border:0; border-radius:13px; cursor:pointer; color:#fff; background:linear-gradient(145deg,#8B5CF6,#6D28D9); display:grid; place-items:center; box-shadow:0 8px 24px rgba(109,40,217,.28); }
+    .send:disabled { opacity:.5; cursor:not-allowed; }
+    .hint { max-width:900px; margin:8px auto 0; color:#4F5A6E; font-size:9px; text-align:center; letter-spacing:.04em; }
+    .error { color:#FDA4AF; }
+    @media (max-width: 850px) { .shell{grid-template-columns:1fr} aside{display:none} header{padding:0 16px;height:70px} #chat{padding:24px 14px}.bubble{max-width:86%}.welcome{margin-top:8vh} }
+    @media (max-width: 480px) { .header-title strong{font-size:12px}.status{display:none}.clear{padding:8px 10px}.suggestions{gap:6px}.suggestion{font-size:10px}.welcome h2{font-size:31px}.welcome p{font-size:12px}.bubble{font-size:12px;padding:11px 12px}.composer{border-radius:15px} }
+  </style>
+</head>
+<body>
+<div class="shell">
+  <aside>
+    <div>
+      <div class="chip"><i></i>{{ ui.domain_badge }}</div>
+      <div class="brand"><h1>VLSI<br><span>ASSISTANT</span></h1><p>{{ ui.tagline }}</p></div>
+    </div>
+    <div class="node-card">
+      <div class="node-head"><b>Silicon core</b><span>LIVE</span></div>
+      <div class="wafer" aria-hidden="true"></div>
+      <div class="stats"><div class="stat"><strong>RTL → GDS</strong><small>design flow</small></div><div class="stat"><strong>PPA</strong><small>optimization</small></div></div>
+    </div>
+    <div class="side-note">Temporary session chat only. No account is required. Your conversation is scoped to this browser session and is cleared with the Clear chat action.</div>
+  </aside>
+  <main>
+    <header>
+      <div class="header-title"><div class="mark"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M7 7h10v10H7z"/><path d="M4 9V4h5M20 15v5h-5M9 20H4v-5M15 4h5v5"/></svg></div><strong>{{ ui.title }}</strong></div>
+      <div style="display:flex;align-items:center;gap:12px"><div class="status"><b></b>AI core ready</div><button class="clear" id="clearBtn" type="button">Clear chat</button></div>
+    </header>
+    <section id="chat" aria-live="polite">
+      <div id="welcome" class="welcome">
+        <div class="orbit"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><circle cx="12" cy="12" r="3"/><ellipse cx="12" cy="12" rx="10" ry="4"/><path d="M12 2v20M2 12h20"/></svg></div>
+        <h2>Design the answer.<br>Understand the silicon.</h2>
+        <p>{{ ui.welcome }}</p>
+        <div class="suggestions"><button class="suggestion">Explain setup vs hold time</button><button class="suggestion">What is CTS?</button><button class="suggestion">Explain PPA trade-offs</button><button class="suggestion">ASIC design flow</button></div>
+      </div>
+      <div id="messages" class="messages" hidden></div>
+    </section>
+    <footer>
+      <div class="composer"><textarea id="message" rows="1" maxlength="4000" placeholder="Ask a VLSI / EDA question…" aria-label="Message"></textarea><button class="send" id="sendBtn" type="button" aria-label="Send message"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m22 2-7 20-4-9-9-4Z"/><path d="M22 2 11 13"/></svg></button></div>
+      <div class="hint">ENTER TO SEND · SHIFT + ENTER FOR NEW LINE · GEMINI {{ ui.title }}</div>
+    </footer>
+  </main>
+</div>
+<script>
+(() => {
+  const chat = document.getElementById('chat');
+  const welcome = document.getElementById('welcome');
+  const messages = document.getElementById('messages');
+  const input = document.getElementById('message');
+  const sendBtn = document.getElementById('sendBtn');
+  const clearBtn = document.getElementById('clearBtn');
+  let busy = false;
+
+  const escapeText = (value) => String(value ?? '');
+  const scrollBottom = () => requestAnimationFrame(() => { chat.scrollTop = chat.scrollHeight; });
+  const setBusy = (value) => { busy = value; sendBtn.disabled = value; input.disabled = value; };
+
+  function showMessages() { welcome.hidden = true; messages.hidden = false; }
+  function addMessage(role, text, temporary = false) {
+    showMessages();
+    const row = document.createElement('div'); row.className = `row ${role}`;
+    const avatar = document.createElement('div'); avatar.className = 'avatar'; avatar.textContent = role === 'user' ? 'YOU' : 'VA';
+    const wrap = document.createElement('div');
+    const bubble = document.createElement('div'); bubble.className = 'bubble'; bubble.textContent = escapeText(text);
+    if (temporary) { row.dataset.typing = 'true'; bubble.innerHTML = '<div class="typing"><i></i><i></i><i></i></div>'; }
+    const time = document.createElement('div'); time.className = 'time'; time.textContent = role === 'user' ? 'SENT' : 'VLSI CORE';
+    wrap.appendChild(bubble); wrap.appendChild(time); row.appendChild(avatar); row.appendChild(wrap); messages.appendChild(row); scrollBottom(); return row;
+  }
+  function replaceTyping(row, text, isError=false) { const bubble = row.querySelector('.bubble'); bubble.textContent = text; if (isError) bubble.classList.add('error'); row.removeAttribute('data-typing'); scrollBottom(); }
+  function renderHistory(items) { messages.innerHTML = ''; if (!items?.length) { welcome.hidden=false; messages.hidden=true; return; } showMessages(); items.forEach(item => addMessage(item.role === 'assistant' ? 'assistant' : 'user', item.text)); scrollBottom(); }
+
+  async function loadHistory() {
+    try { const res = await fetch('/api/history', {cache:'no-store'}); const data = await res.json(); renderHistory(data.messages || []); } catch (_) {}
+  }
+  async function send() {
+    if (busy) return;
+    const text = input.value.trim();
+    if (!text) { input.focus(); return; }
+    addMessage('user', text); input.value=''; input.style.height='auto';
+    const typing = addMessage('assistant', '', true); setBusy(true);
+    try {
+      const res = await fetch('/api/chat', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({message:text}) });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(data.error || 'Something went wrong.');
+      replaceTyping(typing, data.answer || 'No response received.');
+    } catch (err) { replaceTyping(typing, err.message || 'Unable to connect. Please try again.', true); }
+    finally { setBusy(false); input.focus(); }
+  }
+  input.addEventListener('input', () => { input.style.height='auto'; input.style.height=Math.min(input.scrollHeight,140)+'px'; });
+  input.addEventListener('keydown', (e) => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); send(); } });
+  sendBtn.addEventListener('click', send);
+  clearBtn.addEventListener('click', async () => { if (busy) return; try { await fetch('/api/clear', {method:'POST'}); } finally { messages.innerHTML=''; welcome.hidden=false; messages.hidden=true; input.value=''; input.focus(); } });
+  document.querySelectorAll('.suggestion').forEach(btn => btn.addEventListener('click', () => { input.value=btn.textContent; input.dispatchEvent(new Event('input')); input.focus(); send(); }));
+  loadHistory(); input.focus();
+})();
+</script>
+</body>
+</html>
